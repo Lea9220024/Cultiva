@@ -29,20 +29,22 @@ import { Smartphone, CheckCircle2, RefreshCw } from "lucide-react";
 
 export const SettingsView: React.FC = () => {
   const {
-    cultivos,
-    plantas,
-    registros,
-    fertilizaciones,
-    tareas,
-    fotos,
-    achievements,
-    learningProgress,
-    userPreferences,
-    toggleTheme,
-    updateKnowledgeLevel,
-    updateCultivationSystem,
-    loadDemoData,
-  const {
+  cultivos,
+  plantas,
+  registros,
+  fertilizaciones,
+  tareas,
+  fotos,
+  achievements,
+  learningProgress,
+  userPreferences,
+  toggleTheme,
+  updateKnowledgeLevel,
+  updateCultivationSystem,
+  loadDemoData,
+} = useCultiva();
+
+const {
     isInstallable,
     isInstalled,
     isOnline,
