@@ -1,0 +1,1 @@
+{"name":"Cultiva","description":"Aplicación tecnológica de seguimiento, diario y gestión de autocultivo doméstico con métricas y asistente IA.","requestFramePermissions":["camera"],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}

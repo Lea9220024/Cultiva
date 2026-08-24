@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Cultiva — Modo Sin Conexión</title>
+  <meta name="theme-color" content="#052e16" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --card: #18181b;
+      --border: #27272a;
+      --emerald-600: #059669;
+      --emerald-400: #34d399;
+      --emerald-950: #022c22;
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .icon-wrapper {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 1.5rem;
+      background: var(--emerald-950);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff; }
+    p { font-size: 0.875rem; color: var(--muted); line-height: 1.5; margin-bottom: 1.5rem; }
+    .features-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed var(--border);
+      border-radius: 1.25rem;
+      padding: 1rem;
+      margin-bottom: 1.75rem;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+    .features-box ul { list-style: none; }
+    .features-box li { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; color: #e4e4e7; }
+    .features-box li:last-child { margin-bottom: 0; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      border-radius: 9999px;
+      background: var(--emerald-600);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.875rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #10b981; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-wrapper">🌱</div>
+    <h1>Modo Sin Conexión</h1>
+    <p>No tienes acceso a internet en este momento, pero <strong>Cultiva</strong> almacena todos tus datos de forma local en tu dispositivo.</p>
+    
+    <div class="features-box">
+      <ul>
+        <li>✅ Bitácoras y mediciones guardadas</li>
+        <li>✅ Tablas oficiales Top Crop</li>
+        <li>✅ Enciclopedia botánica descargada</li>
+        <li>✅ Calculadora de fertirriego activa</li>
+      </ul>
+    </div>
+
+    <button onclick="window.location.reload()" class="btn">
+      <span>Reintentar Conexión</span>
+      <span>↻</span>
+    </button>
+  </div>
+</body>
+</html>

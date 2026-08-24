@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#022c22" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="leafGrad1M" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="leafGrad2M" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6ee7b7" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="stemGradM" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+  </defs>
+
+  <!-- Full background for maskable -->
+  <rect width="512" height="512" fill="url(#bgGradMask)" />
+
+  <!-- Centered Scaled Plant (within 80% safe zone: scale 0.72 centered) -->
+  <g transform="translate(72, 72) scale(0.72)">
+    <path d="M 64 256 H 448 M 256 64 V 448" stroke="#10b981" stroke-width="2" stroke-opacity="0.15" stroke-dasharray="8 8" />
+    <circle cx="256" cy="256" r="160" fill="none" stroke="#10b981" stroke-width="2" stroke-opacity="0.1" />
+
+    <!-- Stem -->
+    <path d="M 256 390 C 256 310 256 220 256 160" fill="none" stroke="url(#stemGradM)" stroke-width="20" stroke-linecap="round" />
+
+    <!-- Left Leaf -->
+    <path d="M 256 280 C 170 280 120 210 130 140 C 200 130 250 190 256 280 Z" fill="url(#leafGrad1M)" />
+    <path d="M 256 280 C 200 240 165 190 145 155" fill="none" stroke="#064e3b" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+
+    <!-- Right Leaf -->
+    <path d="M 256 230 C 342 230 392 160 382 90 C 312 80 262 140 256 230 Z" fill="url(#leafGrad2M)" />
+    <path d="M 256 230 C 312 190 347 140 367 105" fill="none" stroke="#065f46" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+
+    <!-- Bud -->
+    <circle cx="256" cy="150" r="15" fill="#a7f3d0" />
+
+    <!-- Soil Horizon -->
+    <path d="M 190 400 C 220 385 292 385 322 400" fill="none" stroke="#34d399" stroke-width="14" stroke-linecap="round" opacity="0.8" />
+  </g>
+</svg>
