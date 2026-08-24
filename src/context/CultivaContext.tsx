@@ -11,6 +11,7 @@ import {
   Alerta,
   UserPreferences,
   FertilizationLog,
+  UserFertilizer,
   UserLearningProgress,
   CultivoDates,
   CustomStage,
@@ -21,6 +22,7 @@ import {
   initialPlantas,
   initialRegistros,
   initialFertilizationLogs,
+  initialUserFertilizers,
   initialTareas,
   initialFotos,
   initialEventos,
@@ -44,7 +46,6 @@ export type NavTab =
 export type QuickAddType = "registro" | "fertilizacion" | "riego" | "tarea" | "foto" | "planta";
 
 interface CultivaContextType {
-  // State
   cultivos: Cultivo[];
   activeCrop: Cultivo | null;
   activeCropId: string | null;
@@ -54,6 +55,7 @@ interface CultivaContextType {
   activeCropLogs: Registro[];
   fertilizationLogs: FertilizationLog[];
   activeCropFertilizations: FertilizationLog[];
+  userFertilizers: UserFertilizer[];
   tareas: Tarea[];
   activeCropTasks: Tarea[];
   fotos: Foto[];
@@ -74,7 +76,6 @@ interface CultivaContextType {
   isCustomStagesOpen: boolean;
   selectedPlantIdForModal: string | null;
 
-  // Actions
   setCurrentTab: (tab: NavTab) => void;
   setActiveCropId: (id: string | null) => void;
   setIsQuickAddOpen: (open: boolean, defaultType?: QuickAddType) => void;
@@ -88,13 +89,11 @@ interface CultivaContextType {
   updatePreferences: (prefs: Partial<UserPreferences>) => void;
   completeOnboarding: () => void;
 
-  // Dates & Chronology Actions
   updateCultivo: (id: string, data: Partial<Cultivo>) => void;
   updateCropDates: (id: string, dates: CultivoDates) => void;
   adjustCropChronology: (id: string, newStartDate: string, reason?: string) => void;
   updateCropStages: (id: string, stages: CustomStage[]) => void;
 
-  // CRUD
   addCultivo: (cultivo: Omit<Cultivo, "id">) => Cultivo;
   deleteCultivo: (id: string) => void;
   archiveCultivo: (id: string) => void;
@@ -109,6 +108,10 @@ interface CultivaContextType {
   addFertilizationLog: (log: Omit<FertilizationLog, "id">) => FertilizationLog;
   deleteFertilizationLog: (id: string) => void;
 
+  addUserFertilizer: (fert: Omit<UserFertilizer, "id" | "createdAt">) => UserFertilizer;
+  updateUserFertilizer: (id: string, data: Partial<UserFertilizer>) => void;
+  deleteUserFertilizer: (id: string) => void;
+
   addTarea: (tarea: Omit<Tarea, "id">) => Tarea;
   toggleTarea: (id: string) => void;
   updateTarea: (id: string, data: Partial<Tarea>) => void;
@@ -120,7 +123,6 @@ interface CultivaContextType {
   addEvento: (evento: Omit<Evento, "id">) => Evento;
   deleteEvento: (id: string) => void;
 
-  // Learning & Favorites Actions
   markArticleAsRead: (articleId: string) => void;
   toggleFavoriteArticle: (articleId: string) => void;
   toggleFavoriteProduct: (productId: string) => void;
@@ -128,7 +130,6 @@ interface CultivaContextType {
   toggleFavoriteLog: (logId: string) => void;
   updateKnowledgeLevel: (level: UserKnowledgeLevel) => void;
 
-  // Reset / Backup
   clearAllData: () => void;
   resetAllData: () => void;
   loadDemoData: () => void;
@@ -141,6 +142,7 @@ const STORAGE_KEYS = {
   PLANTAS: "cultiva_v2_plantas",
   REGISTROS: "cultiva_v2_registros",
   FERTILIZATIONS: "cultiva_v2_fertilizations",
+  USER_FERTILIZERS: "cultiva_v2_user_fertilizers",
   TAREAS: "cultiva_v2_tareas",
   FOTOS: "cultiva_v2_fotos",
   EVENTOS: "cultiva_v2_eventos",
@@ -150,104 +152,77 @@ const STORAGE_KEYS = {
 };
 
 export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. Cultivos
   const [cultivos, setCultivos] = useState<Cultivo[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.CULTIVOS) || localStorage.getItem("cultiva_v1_cultivos");
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
     return [initialCultivo, mockArchivedCrop];
   });
 
-  // 2. Active Crop ID
   const [activeCropId, setActiveCropId] = useState<string | null>(() => {
     return cultivos[0]?.id || "cultivo-1";
   });
 
-  // 3. Plantas
   const [plantas, setPlantas] = useState<Planta[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.PLANTAS) || localStorage.getItem("cultiva_v1_plantas");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialPlantas;
   });
 
-  // 4. Registros
   const [registros, setRegistros] = useState<Registro[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.REGISTROS) || localStorage.getItem("cultiva_v1_registros");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialRegistros;
   });
 
-  // 5. Fertilization Logs (V2)
   const [fertilizationLogs, setFertilizationLogs] = useState<FertilizationLog[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.FERTILIZATIONS);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialFertilizationLogs;
   });
 
-  // 6. Tareas
+  const [userFertilizers, setUserFertilizers] = useState<UserFertilizer[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.USER_FERTILIZERS);
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
+    return initialUserFertilizers;
+  });
+
   const [tareas, setTareas] = useState<Tarea[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.TAREAS) || localStorage.getItem("cultiva_v1_tareas");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialTareas;
   });
 
-  // 7. Fotos
   const [fotos, setFotos] = useState<Foto[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.FOTOS) || localStorage.getItem("cultiva_v1_fotos");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialFotos;
   });
 
-  // 8. Eventos
   const [eventos, setEventos] = useState<Evento[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.EVENTOS) || localStorage.getItem("cultiva_v1_eventos");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialEventos;
   });
 
-  // 9. Learning Progress (V2)
   const [learningProgress, setLearningProgress] = useState<UserLearningProgress>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.LEARNING);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialLearningProgress;
   });
 
-  // 10. Achievements
   const [achievements, setAchievements] = useState<Achievement[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS) || localStorage.getItem("cultiva_v1_achievements");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    const saved = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS);
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return initialAchievements;
   });
 
-  // 11. User Preferences
   const [userPreferences, setUserPreferences] = useState<UserPreferences>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PREFERENCES) || localStorage.getItem("cultiva_v1_preferences");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
+    const saved = localStorage.getItem(STORAGE_KEYS.PREFERENCES) || localStorage.getItem("cultiva_v1_prefs");
+    if (saved) { try { return JSON.parse(saved); } catch (e) { console.error(e); } }
     return {
-      theme: "light",
+      theme: "dark",
       tempUnit: "C",
       onboardingCompleted: true,
       activeCropId: "cultivo-1",
@@ -260,7 +235,6 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   });
 
-  // Navigation & Modals
   const [currentTab, setCurrentTab] = useState<NavTab>("dashboard");
   const [isQuickAddOpen, setIsQuickAddOpenState] = useState(false);
   const [quickAddDefaultType, setQuickAddDefaultType] = useState<QuickAddType>("registro");
@@ -271,70 +245,35 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isCustomStagesOpen, setIsCustomStagesOpen] = useState(false);
   const [selectedPlantIdForModal, setSelectedPlantIdForModal] = useState<string | null>(null);
 
-  // Persistence Sync
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CULTIVOS, JSON.stringify(cultivos));
-  }, [cultivos]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.CULTIVOS, JSON.stringify(cultivos)); }, [cultivos]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.PLANTAS, JSON.stringify(plantas)); }, [plantas]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.REGISTROS, JSON.stringify(registros)); }, [registros]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.FERTILIZATIONS, JSON.stringify(fertilizationLogs)); }, [fertilizationLogs]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.USER_FERTILIZERS, JSON.stringify(userFertilizers)); }, [userFertilizers]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.TAREAS, JSON.stringify(tareas)); }, [tareas]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.FOTOS, JSON.stringify(fotos)); }, [fotos]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.EVENTOS, JSON.stringify(eventos)); }, [eventos]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.LEARNING, JSON.stringify(learningProgress)); }, [learningProgress]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements)); }, [achievements]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(userPreferences)); }, [userPreferences]);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PLANTAS, JSON.stringify(plantas));
-  }, [plantas]);
+  const activeCrop = cultivos.find((c) => c.id === activeCropId) || null;
+  const activeCropPlants = plantas.filter((p) => p.cultivoId === activeCropId);
+  const activeCropLogs = registros.filter((r) => r.cultivoId === activeCropId);
+  const activeCropFertilizations = fertilizationLogs.filter((f) => f.cultivoId === activeCropId);
+  const activeCropTasks = tareas.filter((t) => t.cultivoId === activeCropId);
+  const activeCropPhotos = fotos.filter((f) => f.cultivoId === activeCropId);
+  const activeCropEvents = eventos.filter((e) => e.cultivoId === activeCropId);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.REGISTROS, JSON.stringify(registros));
-  }, [registros]);
+  const alerts: Alerta[] = calculateAlerts(activeCrop, activeCropLogs, activeCropTasks);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.FERTILIZATIONS, JSON.stringify(fertilizationLogs));
-  }, [fertilizationLogs]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.TAREAS, JSON.stringify(tareas));
-  }, [tareas]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.FOTOS, JSON.stringify(fotos));
-  }, [fotos]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.EVENTOS, JSON.stringify(eventos));
-  }, [eventos]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.LEARNING, JSON.stringify(learningProgress));
-  }, [learningProgress]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements));
-  }, [achievements]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(userPreferences));
-    if (userPreferences.theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [userPreferences]);
-
-  // Derived Active Crop State
-  const activeCrop = cultivos.find((c) => c.id === activeCropId) || cultivos[0] || null;
-  const activeCropPlants = plantas.filter((p) => p.cultivoId === activeCrop?.id);
-  const activeCropLogs = registros.filter((r) => r.cultivoId === activeCrop?.id);
-  const activeCropFertilizations = fertilizationLogs.filter((f) => f.cultivoId === activeCrop?.id);
-  const activeCropTasks = tareas.filter((t) => t.cultivoId === activeCrop?.id);
-  const activeCropPhotos = fotos.filter((f) => f.cultivoId === activeCrop?.id);
-  const activeCropEvents = eventos.filter((e) => e.cultivoId === activeCrop?.id);
-
-  // Dynamic Alerts
-  const alerts = activeCrop ? calculateAlerts(activeCrop, activeCropLogs, activeCropTasks) : [];
-
-  // Toggle Theme
   const toggleTheme = () => {
-    setUserPreferences((prev) => ({
-      ...prev,
-      theme: prev.theme === "dark" ? "light" : "dark",
-    }));
+    setUserPreferences((prev) => {
+      const nextTheme = prev.theme === "dark" ? "light" : "dark";
+      if (nextTheme === "dark") document.documentElement.classList.add("dark");
+      else document.documentElement.classList.remove("dark");
+      return { ...prev, theme: nextTheme };
+    });
   };
 
   const updatePreferences = (prefs: Partial<UserPreferences>) => {
@@ -342,114 +281,25 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const completeOnboarding = () => {
-    setUserPreferences((prev) => ({ ...prev, onboardingCompleted: true }));
+    updatePreferences({ onboardingCompleted: true });
     setIsOnboardingOpen(false);
+    confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
   };
 
-  const setIsQuickAddOpen = (open: boolean, defaultType?: QuickAddType) => {
-    if (defaultType) {
-      setQuickAddDefaultType(defaultType);
-    }
+  const setIsQuickAddOpen = (open: boolean, defaultType: QuickAddType = "registro") => {
+    setQuickAddDefaultType(defaultType);
     setIsQuickAddOpenState(open);
   };
 
-  // ----------------------------------------------------
-  // DATES & CHRONOLOGY ACTIONS (V2)
-  // ----------------------------------------------------
-  const updateCropDates = (cropId: string, dates: CultivoDates) => {
-    setCultivos((prev) =>
-      prev.map((c) => {
-        if (c.id === cropId) {
-          return {
-            ...c,
-            startDate: dates.startDate || c.startDate,
-            dates: {
-              ...(c.dates || { startDate: c.startDate }),
-              ...dates,
-            },
-          };
-        }
-        return c;
-      })
-    );
-
-    // Record Event without altering log timestamps
-    const evt: Evento = {
-      id: "evt-dates-" + Date.now(),
-      cultivoId: cropId,
-      date: new Date().toISOString(),
-      title: "Actualización de Fechas de Cultivo",
-      description: `Fechas recalculadas: Inicio (${dates.startDate}), Floración (${dates.floweringStartDate || "N/D"}), Estimada Cosecha (${dates.estimatedHarvestDate || "N/D"}).`,
-      type: "hito",
-    };
-    setEventos((prev) => [evt, ...prev]);
-  };
-
-  const adjustCropChronology = (cropId: string, newStartDate: string, reason?: string) => {
-    setCultivos((prev) =>
-      prev.map((c) => {
-        if (c.id === cropId) {
-          const oldStartDate = c.dates?.startDate || c.startDate;
-          return {
-            ...c,
-            startDate: newStartDate,
-            dates: {
-              ...(c.dates || { startDate: oldStartDate }),
-              startDate: newStartDate,
-            },
-          };
-        }
-        return c;
-      })
-    );
-
-    // Add milestone without changing historical log dates
-    const evt: Evento = {
-      id: "evt-chrono-" + Date.now(),
-      cultivoId: cropId,
-      date: new Date().toISOString(),
-      title: "⚙️ Ajuste de Cronología Aplicado",
-      description: `Fecha de inicio del cultivo redefinida a ${newStartDate}. ${reason ? `Motivo: ${reason}` : "Recálculo automático de edades derivado."}`,
-      type: "hito",
-    };
-    setEventos((prev) => [evt, ...prev]);
-  };
-
-  const updateCropStages = (cropId: string, stages: CustomStage[]) => {
-    setCultivos((prev) =>
-      prev.map((c) => {
-        if (c.id === cropId) {
-          const current = stages.find((s) => s.isCurrent);
-          return {
-            ...c,
-            stage: current ? current.name : c.stage,
-            customStages: stages,
-          };
-        }
-        return c;
-      })
-    );
-  };
-
-  // ----------------------------------------------------
-  // CRUD OPERATIONS
-  // ----------------------------------------------------
   const addCultivo = (cultivoData: Omit<Cultivo, "id">): Cultivo => {
-    const newId = "cultivo-" + Date.now();
-    const newCrop: Cultivo = {
-      ...cultivoData,
-      id: newId,
-      dates: cultivoData.dates || { startDate: cultivoData.startDate },
-    };
+    const newCrop: Cultivo = { ...cultivoData, id: "cultivo-" + Date.now() };
     setCultivos((prev) => [newCrop, ...prev]);
-    setActiveCropId(newId);
+    setActiveCropId(newCrop.id);
     return newCrop;
   };
 
   const updateCultivo = (id: string, data: Partial<Cultivo>) => {
-    setCultivos((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...data } : c))
-    );
+    setCultivos((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
   };
 
   const deleteCultivo = (id: string) => {
@@ -461,32 +311,38 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const archiveCultivo = (id: string) => {
-    setCultivos((prev) =>
-      prev.map((c) =>
-        c.id === id
-          ? {
-              ...c,
-              status: "archivado" as const,
-              endDate: new Date().toISOString().split("T")[0],
-            }
-          : c
-      )
-    );
+    setCultivos((prev) => prev.map((c) => (c.id === id ? { ...c, status: "archivado" as const } : c)));
+  };
+
+  const updateCropDates = (id: string, dates: CultivoDates) => {
+    updateCultivo(id, { dates });
+  };
+
+  const adjustCropChronology = (id: string, newStartDate: string, reason?: string) => {
+    updateCultivo(id, { startDate: newStartDate });
+    if (reason) {
+      addRegistro({
+        cultivoId: id,
+        date: new Date().toISOString(),
+        notes: "Ajuste de cronología: fecha modificada a " + newStartDate + ". Motivo: " + reason,
+        tags: ["etapa", "mantenimiento"],
+        images: [],
+      });
+    }
+  };
+
+  const updateCropStages = (id: string, stages: CustomStage[]) => {
+    updateCultivo(id, { customStages: stages });
   };
 
   const addPlanta = (plantaData: Omit<Planta, "id">): Planta => {
-    const newPlant: Planta = {
-      ...plantaData,
-      id: "planta-" + Date.now(),
-    };
+    const newPlant: Planta = { ...plantaData, id: "planta-" + Date.now() };
     setPlantas((prev) => [...prev, newPlant]);
     return newPlant;
   };
 
   const updatePlanta = (id: string, data: Partial<Planta>) => {
-    setPlantas((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...data } : p))
-    );
+    setPlantas((prev) => prev.map((p) => (p.id === id ? { ...p, ...data } : p)));
   };
 
   const deletePlanta = (id: string) => {
@@ -494,10 +350,7 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addRegistro = (regData: Omit<Registro, "id">): Registro => {
-    const newReg: Registro = {
-      ...regData,
-      id: "reg-" + Date.now(),
-    };
+    const newReg: Registro = { ...regData, id: "reg-" + Date.now() };
     setRegistros((prev) => [newReg, ...prev]);
     return newReg;
   };
@@ -506,32 +359,26 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setRegistros((prev) => prev.filter((r) => r.id !== id));
   };
 
-  // Fertilization CRUD
   const addFertilizationLog = (logData: Omit<FertilizationLog, "id">): FertilizationLog => {
-    const newLog: FertilizationLog = {
-      ...logData,
-      id: "fert-" + Date.now(),
-    };
+    const newLog: FertilizationLog = { ...logData, id: "fert-" + Date.now() };
     setFertilizationLogs((prev) => [newLog, ...prev]);
 
-    // Also link a summary record in the diary
     const diaryEntry: Registro = {
       id: "reg-fert-" + Date.now(),
       cultivoId: logData.cultivoId,
       plantaId: logData.plantaId,
       date: new Date(logData.date).toISOString(),
-      notes: `🧪 Fertilización registrada: ${logData.productName} (${logData.doseMlPerL} ml/L en ${logData.volumeWaterLiters}L de agua = ${logData.totalProductMl} ml total). ${logData.notes || ""}`,
+      notes: "🧪 Fertilización: " + logData.productName + " (" + logData.doseMlPerL + " ml/L en " + logData.volumeWaterLiters + "L = " + logData.totalProductMl + " ml total). " + (logData.notes || ""),
       watering: {
         performed: true,
         amountLiters: logData.volumeWaterLiters,
         volumeMl: logData.volumeWaterLiters * 1000,
-        nutrients: `${logData.productName} (${logData.doseMlPerL} ml/L)`,
+        nutrients: logData.productName + " (" + logData.doseMlPerL + " ml/L)",
       },
       tags: ["fertilizacion", "riego"],
       images: logData.photoUrl ? [logData.photoUrl] : [],
     };
     setRegistros((prev) => [diaryEntry, ...prev]);
-
     return newLog;
   };
 
@@ -539,33 +386,36 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setFertilizationLogs((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const addTarea = (tareaData: Omit<Tarea, "id">): Tarea => {
-    const newTask: Tarea = {
-      ...tareaData,
-      id: "task-" + Date.now(),
+  const addUserFertilizer = (data: Omit<UserFertilizer, "id" | "createdAt">): UserFertilizer => {
+    const newFert: UserFertilizer = {
+      ...data,
+      id: "user-fert-" + Date.now(),
+      createdAt: new Date().toISOString().split("T")[0],
     };
+    setUserFertilizers((prev) => [newFert, ...prev]);
+    return newFert;
+  };
+
+  const updateUserFertilizer = (id: string, data: Partial<UserFertilizer>) => {
+    setUserFertilizers((prev) => prev.map((f) => (f.id === id ? { ...f, ...data } : f)));
+  };
+
+  const deleteUserFertilizer = (id: string) => {
+    setUserFertilizers((prev) => prev.filter((f) => f.id !== id));
+  };
+
+  const addTarea = (tareaData: Omit<Tarea, "id">): Tarea => {
+    const newTask: Tarea = { ...tareaData, id: "task-" + Date.now() };
     setTareas((prev) => [newTask, ...prev]);
     return newTask;
   };
 
   const toggleTarea = (id: string) => {
-    setTareas((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? {
-              ...t,
-              completed: !t.completed,
-              completedAt: !t.completed ? new Date().toISOString() : undefined,
-            }
-          : t
-      )
-    );
+    setTareas((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? new Date().toISOString() : undefined } : t)));
   };
 
   const updateTarea = (id: string, data: Partial<Tarea>) => {
-    setTareas((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, ...data } : t))
-    );
+    setTareas((prev) => prev.map((t) => (t.id === id ? { ...t, ...data } : t)));
   };
 
   const deleteTarea = (id: string) => {
@@ -573,10 +423,7 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addFoto = (fotoData: Omit<Foto, "id">): Foto => {
-    const newFoto: Foto = {
-      ...fotoData,
-      id: "foto-" + Date.now(),
-    };
+    const newFoto: Foto = { ...fotoData, id: "foto-" + Date.now() };
     setFotos((prev) => [newFoto, ...prev]);
     return newFoto;
   };
@@ -586,75 +433,44 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addEvento = (eventoData: Omit<Evento, "id">): Evento => {
-    const newEvt: Evento = {
-      ...eventoData,
-      id: "evt-" + Date.now(),
-    };
-    setEventos((prev) => [newEvt, ...prev]);
-    return newEvt;
+    const newEvento: Evento = { ...eventoData, id: "evento-" + Date.now() };
+    setEventos((prev) => [newEvento, ...prev]);
+    return newEvento;
   };
 
   const deleteEvento = (id: string) => {
     setEventos((prev) => prev.filter((e) => e.id !== id));
   };
 
-  // Learning Progress & Favorites
   const markArticleAsRead = (articleId: string) => {
-    setLearningProgress((prev) => {
-      if (prev.readArticleIds.includes(articleId)) return prev;
-      return {
-        ...prev,
-        readArticleIds: [...prev.readArticleIds, articleId],
-        pendingArticleIds: prev.pendingArticleIds.filter((id) => id !== articleId),
-      };
-    });
+    setLearningProgress((prev) => prev.readArticleIds.includes(articleId) ? prev : { ...prev, readArticleIds: [...prev.readArticleIds, articleId] });
   };
 
   const toggleFavoriteArticle = (articleId: string) => {
     setLearningProgress((prev) => {
       const isFav = prev.favoriteArticleIds.includes(articleId);
-      return {
-        ...prev,
-        favoriteArticleIds: isFav
-          ? prev.favoriteArticleIds.filter((id) => id !== articleId)
-          : [...prev.favoriteArticleIds, articleId],
-      };
+      return { ...prev, favoriteArticleIds: isFav ? prev.favoriteArticleIds.filter((id) => id !== articleId) : [...prev.favoriteArticleIds, articleId] };
     });
   };
 
   const toggleFavoriteProduct = (productId: string) => {
     setLearningProgress((prev) => {
       const isFav = prev.favoriteProductIds.includes(productId);
-      return {
-        ...prev,
-        favoriteProductIds: isFav
-          ? prev.favoriteProductIds.filter((id) => id !== productId)
-          : [...prev.favoriteProductIds, productId],
-      };
+      return { ...prev, favoriteProductIds: isFav ? prev.favoriteProductIds.filter((id) => id !== productId) : [...prev.favoriteProductIds, productId] };
     });
   };
 
   const toggleFavoriteSource = (sourceId: string) => {
     setLearningProgress((prev) => {
       const isFav = prev.favoriteSourceIds.includes(sourceId);
-      return {
-        ...prev,
-        favoriteSourceIds: isFav
-          ? prev.favoriteSourceIds.filter((id) => id !== sourceId)
-          : [...prev.favoriteSourceIds, sourceId],
-      };
+      return { ...prev, favoriteSourceIds: isFav ? prev.favoriteSourceIds.filter((id) => id !== sourceId) : [...prev.favoriteSourceIds, sourceId] };
     });
   };
 
   const toggleFavoriteLog = (logId: string) => {
     setLearningProgress((prev) => {
       const isFav = prev.favoriteLogIds.includes(logId);
-      return {
-        ...prev,
-        favoriteLogIds: isFav
-          ? prev.favoriteLogIds.filter((id) => id !== logId)
-          : [...prev.favoriteLogIds, logId],
-      };
+      return { ...prev, favoriteLogIds: isFav ? prev.favoriteLogIds.filter((id) => id !== logId) : [...prev.favoriteLogIds, logId] };
     });
   };
 
@@ -663,28 +479,27 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setUserPreferences((prev) => ({ ...prev, knowledgeLevel: level }));
   };
 
-  // Reset & Demo
   const clearAllData = () => {
     localStorage.clear();
     setCultivos([]);
     setPlantas([]);
     setRegistros([]);
     setFertilizationLogs([]);
+    setUserFertilizers([]);
     setTareas([]);
     setFotos([]);
     setEventos([]);
     setActiveCropId(null);
   };
 
-  const resetAllData = () => {
-    clearAllData();
-  };
+  const resetAllData = () => { clearAllData(); };
 
   const loadDemoData = () => {
     setCultivos([initialCultivo, mockArchivedCrop]);
     setPlantas(initialPlantas);
     setRegistros(initialRegistros);
     setFertilizationLogs(initialFertilizationLogs);
+    setUserFertilizers(initialUserFertilizers);
     setTareas(initialTareas);
     setFotos(initialFotos);
     setEventos(initialEventos);
@@ -705,6 +520,7 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
         activeCropLogs,
         fertilizationLogs,
         activeCropFertilizations,
+        userFertilizers,
         tareas,
         activeCropTasks,
         fotos,
@@ -755,6 +571,10 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
         addFertilizationLog,
         deleteFertilizationLog,
+
+        addUserFertilizer,
+        updateUserFertilizer,
+        deleteUserFertilizer,
 
         addTarea,
         toggleTarea,

@@ -7,6 +7,7 @@ import {
   Evento,
   Achievement,
   FertilizationLog,
+  UserFertilizer,
   UserLearningProgress,
 } from "./types";
 
@@ -136,6 +137,37 @@ export const initialRegistros: Registro[] = [
   },
 ];
 
+export const initialUserFertilizers: UserFertilizer[] = [
+  {
+    id: "user-fert-1",
+    name: "Abono Orgánico Crecimiento",
+    brand: "BioGrow Natural",
+    npk: "4-1-2",
+    form: "Líquido",
+    targetPhase: "Vegetativo",
+    nutrientsAdditional: "Extracto de algas y aminoácidos",
+    manufacturerDose: "2 ml / L",
+    manufacturerFrequency: "1 vez por semana",
+    applicationMethod: "Riego a sustrato",
+    notes: "Seguir indicación de etiqueta: agitar bien antes de diluir.",
+    createdAt: "2026-08-10",
+  },
+  {
+    id: "user-fert-2",
+    name: "Enmienda Sólida Calcio-Magnesio",
+    brand: "Dolomita Natural",
+    npk: "0-0-0 + Ca + Mg",
+    form: "Enmienda sólida",
+    targetPhase: "Todo el ciclo",
+    nutrientsAdditional: "Calcio 30%, Magnesio 20%",
+    manufacturerDose: "1.5 g / L de sustrato",
+    manufacturerFrequency: "Mezcla inicial antes de plantar",
+    applicationMethod: "Mezcla en sustrato",
+    notes: "Aporte preventivo de liberación lenta para amortiguar pH.",
+    createdAt: "2026-08-01",
+  },
+];
+
 export const initialFertilizationLogs: FertilizationLog[] = [
   {
     id: "fert-1",
@@ -144,11 +176,12 @@ export const initialFertilizationLogs: FertilizationLog[] = [
     date: "2026-08-18",
     productId: "top_veg",
     productName: "Top Veg",
+    fertilizerType: "historical_top_crop",
     volumeWaterLiters: 1.5,
     doseMlPerL: 2,
     totalProductMl: 3.0,
     stage: "Vegetativo",
-    notes: "Aplicación semanal de crecimiento según tabla oficial Top Crop.",
+    notes: "Registro histórico comercial.",
   },
   {
     id: "fert-2",
@@ -157,11 +190,12 @@ export const initialFertilizationLogs: FertilizationLog[] = [
     date: "2026-08-18",
     productId: "deeper_underground",
     productName: "Deeper Underground",
+    fertilizerType: "historical_top_crop",
     volumeWaterLiters: 1.5,
     doseMlPerL: 1,
     totalProductMl: 1.5,
     stage: "Vegetativo",
-    notes: "Refuerzo radicular preventivo.",
+    notes: "Registro histórico comercial.",
   },
   {
     id: "fert-3",
@@ -169,6 +203,7 @@ export const initialFertilizationLogs: FertilizationLog[] = [
     date: "2026-08-11",
     productId: "top_veg",
     productName: "Top Veg",
+    fertilizerType: "historical_top_crop",
     volumeWaterLiters: 3.0,
     doseMlPerL: 2,
     totalProductMl: 6.0,
@@ -179,13 +214,14 @@ export const initialFertilizationLogs: FertilizationLog[] = [
     id: "fert-4",
     cultivoId: "cultivo-1",
     date: "2026-08-04",
-    productId: "barrier",
-    productName: "Barrier",
-    volumeWaterLiters: 3.0,
-    doseMlPerL: 0.5,
-    totalProductMl: 1.5,
-    stage: "Vegetativo",
-    notes: "Aporte de silicio para engrosar tallos y resistencia térmica.",
+    productId: "humus_lombriz",
+    productName: "Té de Humus de Lombriz",
+    fertilizerType: "natural",
+    volumeWaterLiters: 2.0,
+    doseMlPerL: 10,
+    totalProductMl: 20.0,
+    stage: "Plántula",
+    notes: "Riego biológico con té aireado de vermicompost.",
   },
 ];
 

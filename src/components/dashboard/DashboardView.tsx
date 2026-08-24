@@ -27,7 +27,7 @@ import { CropDateSettingsModal } from "../crops/CropDateSettingsModal";
 import { CropAdjustChronologyModal } from "../crops/CropAdjustChronologyModal";
 import { CropCustomStagesModal } from "../crops/CropCustomStagesModal";
 import { calculateCropChronology, calculatePlantAge } from "../../utils/dateCalculations";
-import { TOP_CROP_SCHEDULES } from "../../data/topCropData";
+import { NUTRITION_SCHEDULES } from "../../data/nutritionData";
 import { ENCYCLOPEDIA_ARTICLES } from "../../data/encyclopediaData";
 
 export const DashboardView: React.FC = () => {
@@ -77,10 +77,9 @@ export const DashboardView: React.FC = () => {
     return vpd.toFixed(2);
   }, [latestTempNum, latestHumidityNum]);
 
-  // Nutrition status
+  // Nutrition status (V2 Generic)
   const currentSystem = userPreferences.cultivationSystem || "Tierra";
-  const systemSchedule = TOP_CROP_SCHEDULES[currentSystem] || TOP_CROP_SCHEDULES.Tierra;
-  // Calculate approximate week from total days
+  const systemSchedule = NUTRITION_SCHEDULES[currentSystem] || NUTRITION_SCHEDULES.Tierra;
   const currentWeekNumber = Math.min(
     systemSchedule.weeks.length,
     Math.max(1, Math.ceil((chrono?.currentDay || 20) / 7))
@@ -346,7 +345,7 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
-        {/* 4. TOP CROP NUTRITION BENTO CARD (1 col x 2 rows) */}
+        {/* 4. NUTRITION BOTANICAL BENTO CARD (1 col x 2 rows) */}
         <div className="col-span-1 md:col-span-2 lg:col-span-1 row-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -363,18 +362,16 @@ export const DashboardView: React.FC = () => {
 
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 space-y-2">
               <div className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">
-                {currentWeekData.phase}
+                {currentWeekData.phase} • {currentWeekData.stageName}
               </div>
-              <div className="space-y-1">
-                {currentWeekData.dosages.slice(0, 3).map((d) => (
-                  <div key={d.productId} className="flex justify-between text-xs">
-                    <span className="text-zinc-600 dark:text-zinc-400 truncate max-w-[110px]">
-                      {d.productName}
-                    </span>
-                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      {d.doseMlPerL} ml/L
-                    </span>
-                  </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                {currentWeekData.nutritionalObjective}
+              </p>
+              <div className="pt-1 flex flex-wrap gap-1">
+                {currentWeekData.relevantNutrients.map((nutId) => (
+                  <span key={nutId} className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+                    {nutId.toUpperCase()}
+                  </span>
                 ))}
               </div>
             </div>

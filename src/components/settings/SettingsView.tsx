@@ -29,20 +29,22 @@ import { Smartphone, CheckCircle2, RefreshCw } from "lucide-react";
 
 export const SettingsView: React.FC = () => {
   const {
-  cultivos,
-  plantas,
-  registros,
-  fertilizaciones,
-  tareas,
-  fotos,
-  achievements,
-  learningProgress,
-  userPreferences,
-  toggleTheme,
-  updateKnowledgeLevel,
-  updateCultivationSystem,
-  loadDemoData,
-} = useCultiva();
+    cultivos,
+    plantas,
+    registros,
+    fertilizationLogs,
+    userFertilizers,
+    tareas,
+    fotos,
+    achievements,
+    learningProgress,
+    userPreferences,
+    updatePreferences,
+    toggleTheme,
+    updateKnowledgeLevel,
+    loadDemoData,
+    clearAllData,
+  } = useCultiva();
 
 const {
     isInstallable,
@@ -71,7 +73,8 @@ const {
       cultivos,
       plantas,
       registros,
-      fertilizaciones,
+      fertilizationLogs,
+      userFertilizers,
       tareas,
       fotos,
       learningProgress,
@@ -167,25 +170,25 @@ const {
           </div>
         </div>
 
-        {/* 2. Cultivation System & Top Crop Default (V2) */}
+        {/* 2. Cultivation System & Nutrition Strategy (V2) */}
         <div className="p-6 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs space-y-4">
           <div className="flex items-center space-x-2.5 text-emerald-600 dark:text-emerald-400">
             <FlaskConical className="w-5 h-5" />
             <h2 className="text-sm font-bold uppercase tracking-wider font-mono">
-              Sistema Nutricional Predeterminado
+              Estrategia Nutricional Predeterminada
             </h2>
           </div>
           <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Define la tabla oficial Top Crop activa para sugerencias semanales y cálculos automáticos de mililitros.
+            Define el medio de cultivo activo para las recomendaciones de nutrición, dinámica de riego y parámetros físico-químicos orientativos.
           </p>
 
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {(["Tierra", "Coco", "Hidroponia", "Auto"] as const).map((sys) => {
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+            {(["Tierra", "Coco", "Hidroponia", "Living Soil", "Auto"] as const).map((sys) => {
               const isSelected = userPreferences.cultivationSystem === sys;
               return (
                 <button
                   key={sys}
-                  onClick={() => updateCultivationSystem(sys)}
+                  onClick={() => updatePreferences({ cultivationSystem: sys })}
                   className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     isSelected
                       ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-2xs"
@@ -211,7 +214,7 @@ const {
             Cultiva opera bajo el principio de <strong>soberanía de datos</strong>. Todas tus fotos, notas, riegos, dosis y pasaportes se almacenan <strong>localmente en tu navegador</strong>.
           </p>
           <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-[11px] text-zinc-500 font-mono">
-            💾 {registros.length} bitácoras, {fertilizaciones.length} fertirriegos y {fotos.length} fotos guardadas localmente.
+            💾 {registros.length} bitácoras, {fertilizationLogs.length} fertirriegos y {fotos.length} fotos guardadas localmente.
           </div>
         </div>
 

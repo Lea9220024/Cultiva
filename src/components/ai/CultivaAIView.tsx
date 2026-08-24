@@ -18,7 +18,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useCultiva } from "../../context/CultivaContext";
-import { TOP_CROP_SCHEDULES, TOP_CROP_PRODUCTS } from "../../data/topCropData";
+import { NUTRITION_SCHEDULES } from "../../data/nutritionData";
 import { calculateCropChronology } from "../../utils/dateCalculations";
 
 interface ChatMessage {
@@ -47,7 +47,7 @@ export const CultivaAIView: React.FC = () => {
       id: "1",
       role: "assistant",
       content:
-        "¡Hola! Soy Cultiva IA, tu asistente técnico y botánico. Puedo analizar los parámetros registrados de tu cultivo, auditar tus planes de nutrición Top Crop, evaluar fotografías foliares o resolver dudas sobre podas, sustratos y cronología. ¿Qué te gustaría consultar hoy?",
+        "¡Hola! Soy Cultiva IA, tu asistente técnico y botánico especializado. Puedo analizar los parámetros registrados de tu cultivo, auditar la fertilidad y nutrición de tu sustrato, evaluar fotografías foliares o resolver dudas sobre podas, sustratos y cronología. ¿Qué te gustaría consultar hoy?",
       timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -94,7 +94,7 @@ export const CultivaAIView: React.FC = () => {
     try {
       // Build real crop & nutrition context
       const chronology = activeCrop ? calculateCropChronology(activeCrop) : null;
-      const systemSchedule = TOP_CROP_SCHEDULES[userPreferences.cultivationSystem || "Tierra"] || TOP_CROP_SCHEDULES.Tierra;
+      const systemSchedule = NUTRITION_SCHEDULES[userPreferences.cultivationSystem || "Tierra"] || NUTRITION_SCHEDULES.Tierra;
 
       const contextPayload = activeCrop
         ? {

@@ -227,73 +227,151 @@ export interface OfficialSource {
   description?: string;
 }
 
-export interface FertilizerProduct {
+// ----------------------------------------------------
+// V2: SISTEMA DE NUTRICIÓN BOTÁNICA CULTIVA (INDEPENDIENTE DE MARCAS)
+// ----------------------------------------------------
+
+export type NutrientCategory = "macronutriente_primario" | "macronutriente_secundario" | "micronutriente";
+
+export interface Nutrient {
   id: string;
   name: string;
-  brand: "Top Crop" | "Otro";
-  category: TopCropCategory;
-  recommendedStage: string;
-  description: string;
-  composition: string;
-  compositionNpk?: string;
-  manufacturerDose: string;
-  minDoseMlPerL: number;
-  maxDoseMlPerL: number;
-  defaultDoseMlPerL?: number;
-  doseRangeMlPerL?: string;
-  frequency: string;
-  applicationMethod: "Riego radicular" | "Foliar" | "Sustrato" | "Riego o Foliar" | string;
-  compatibilities: string;
-  warnings: string;
-  keyBenefit?: string;
-  icon?: string;
-  officialSource: OfficialSource;
-  officialGuideUrl?: string;
-  lastUpdated: string;
-  image: string;
-  npk?: string;
-  organicCertified?: boolean;
+  symbol: string;
+  category: NutrientCategory;
+  shortDescription: string;
+  whatItDoes: string;
+  plantFunctions: string[];
+  relevantStages: (Stage | string)[];
+  commonSources: string[];
+  deficiencySigns: string;
+  excessConsiderations: string;
+  interactions: string;
+  sources: OfficialSource[];
 }
 
-export interface TopCropScheduleWeek {
+export type NaturalSourceType = "enmienda_organica" | "mineral_natural" | "extracto_botanico" | "microbiologia";
+
+export interface NaturalSource {
+  id: string;
+  name: string;
+  type: NaturalSourceType;
+  origin: string;
+  description: string;
+  nutrientsProvided: string[];
+  howItIsObtained: string;
+  whereToFindIt: string; // Viveros, agropecuarias, tiendas de jardinería, etc.
+  typicalCharacteristics: string;
+  applicationContext: string;
+  warnings: string;
+  sources: OfficialSource[];
+}
+
+export interface MineralSource {
+  id: string;
+  name: string;
+  chemicalFormula: string;
+  description: string;
+  nutrientsProvided: string[];
+  whereToFindIt: string;
+  applicationContext: string;
+  solubility: string;
+  warnings: string;
+  sources: OfficialSource[];
+}
+
+export type GenericFertilizerCategory =
+  | "base_crecimiento"
+  | "base_floracion"
+  | "balanceado"
+  | "cal_mag"
+  | "pk_engorde"
+  | "microelementos"
+  | "enmienda";
+
+export interface GenericFertilizer {
+  id: string;
+  name: string;
+  category: GenericFertilizerCategory;
+  npk: string;
+  nutrients: string[];
+  form: "Líquido" | "Polvo hidrosoluble" | "Granulado" | "Enmienda sólida";
+  description: string;
+  recommendedContexts: string[];
+  manufacturerLabelRequired: boolean;
+  warnings: string;
+  sources: OfficialSource[];
+}
+
+export interface UserFertilizer {
+  id: string;
+  name: string;
+  brand?: string;
+  npk?: string;
+  form: "Líquido" | "Polvo hidrosoluble" | "Granulado" | "Enmienda sólida" | "Otro";
+  targetPhase: "Vegetativo" | "Floración" | "Todo el ciclo" | "Enraizamiento" | "Corrector" | "Maduración";
+  nutrientsAdditional?: string;
+  manufacturerDose?: string; // Dosis indicada por etiqueta (ej. 2 ml/L)
+  manufacturerFrequency?: string; // Frecuencia de etiqueta (ej. 1 vez por semana)
+  applicationMethod: "Riego a sustrato" | "Foliar" | "Mezcla en sustrato" | "Hidropónico";
+  notes?: string;
+  image?: string;
+  createdAt: string;
+}
+
+export interface NutritionScheduleWeek {
   weekNumber: number;
   stageName: string;
   phase: string;
-  dosages: {
-    productId: string;
-    productName: string;
-    doseMlPerL: number;
-    frequency?: string;
-  }[];
-  phRecommended: string;
-  ecRecommended: string;
-  photoperiod: string;
-  notes?: string;
+  nutritionalObjective: string;
+  relevantNutrients: string[]; // IDs de nutrientes
+  naturalOptions: string[]; // Nombres o IDs de enmiendas
+  genericOptions: string[]; // Nombres o IDs de perfiles genéricos
+  targetEcRange?: string;
+  targetPhRange?: string;
+  photoperiod?: string;
+  warnings?: string;
+  educationalNotes: string;
+  sources: OfficialSource[];
 }
 
-export interface TopCropSchedule {
+export interface NutritionSchedule {
   system: CultivationSystem | string;
   title: string;
   description: string;
-  weeks: TopCropScheduleWeek[];
+  substrateConsiderations: string;
+  irrigationDynamics: string;
+  weeks: NutritionScheduleWeek[];
 }
 
-export interface TopCropScheduleEntry {
-  weekNumber: number;
-  stageName: string;
-  method: "Tierra" | "Coco" | "Auto";
-  products: {
-    productId: string;
-    productName: string;
-    dose: string;
-    frequency: string;
-    applicationMethod: string;
-  }[];
-  phRecommended: string;
-  ecRecommended: string;
-  photoperiod: string;
-  notes?: string;
+export interface DeficiencyGuide {
+  id: string;
+  nutrientId: string;
+  nutrientName: string;
+  symptomLocation: "Hojas bajas/viejas (Móvil)" | "Hojas nuevas/ápices (Inmóvil)" | "Hojas bajas/medianas (Móvil)" | "Toda la planta" | "Pecíolos y tallos";
+  visualDescription: string;
+  potentialCauses: string[];
+  investigationSteps: string[];
+  cautiousAdvice: string;
+  sources: OfficialSource[];
 }
+
+export interface ContextInfoItem {
+  id: string;
+  name: string;
+  category: "nutriente" | "fuente_natural" | "mineral" | "fertilizante_generico" | "termino_tecnico";
+  icon: string;
+  badge: string;
+  whatIs: string;
+  purpose: string;
+  whereToFind?: string;
+  usageContext: string;
+  precautions: string;
+  sources?: OfficialSource[];
+}
+
+// ----------------------------------------------------
+// REGISTRO DE FERTILIZACIÓN (COMPATIBILIDAD HISTÓRICA Y NUEVA)
+// ----------------------------------------------------
 
 export interface FertilizationLog {
   id: string;
@@ -302,13 +380,75 @@ export interface FertilizationLog {
   date: string;
   productId: string;
   productName: string;
+  fertilizerType?: "custom" | "generic" | "natural" | "historical_top_crop";
   volumeWaterLiters: number;
   doseMlPerL: number;
   totalProductMl: number;
   stage: Stage | string;
+  npk?: string;
   notes?: string;
   photoUrl?: string;
   warningNotice?: string;
+}
+
+// Retrocompatibilidad con tipos heredados de Top Crop (para evitar roturas)
+export interface FertilizerProduct {
+  id: string;
+  name: string;
+  brand?: string;
+  category: string;
+  recommendedStage?: string;
+  description: string;
+  composition?: string;
+  compositionNpk?: string;
+  applicationType?: string;
+  manufacturerDose?: string;
+  minDoseMlPerL?: number;
+  maxDoseMlPerL?: number;
+  defaultDoseMlPerL?: number;
+  doseRangeMlPerL?: string;
+  frequency?: string;
+  applicationMethod?: string;
+  compatibilities?: string;
+  keyBenefit?: string;
+  icon?: string;
+  warnings?: string;
+  officialSource?: OfficialSource;
+  officialGuideUrl?: string;
+  lastUpdated?: string;
+  image?: string;
+  npk?: string;
+  organicCertified?: boolean;
+}
+export interface TopCropScheduleWeek {
+  weekNumber: number;
+  stageName: string;
+  phase: string;
+  photoperiod?: string;
+  phRecommended?: string;
+  ecRecommended?: string;
+  targetPhRange?: string;
+  targetEcRange?: string;
+  notes?: string;
+  dosages: { productId: string; productName: string; doseMlPerL: number; frequency?: string }[];
+}
+export interface TopCropSchedule {
+  system: CultivationSystem | string;
+  title: string;
+  description: string;
+  substrateConsiderations?: string;
+  irrigationDynamics?: string;
+  weeks: TopCropScheduleWeek[];
+}
+export interface TopCropScheduleEntry {
+  weekNumber: number;
+  stageName: string;
+  method: string;
+  products: { productId: string; productName: string; dose: string; frequency: string; applicationMethod: string }[];
+  phRecommended: string;
+  ecRecommended: string;
+  photoperiod: string;
+  notes?: string;
 }
 
 // ----------------------------------------------------
