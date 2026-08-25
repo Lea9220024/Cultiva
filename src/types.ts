@@ -63,6 +63,15 @@ export interface User {
   preferences: UserPreferences;
 }
 
+export interface UserProfile {
+  id: string;
+  displayName: string;
+  avatarUrl?: string;
+  email?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface CustomStage {
   id: string;
   name: string;

@@ -1,4 +1,5 @@
 import React from "react";
+import { AuthProvider } from "./context/AuthContext";
 import { CultivaProvider, useCultiva } from "./context/CultivaContext";
 import { Header } from "./components/common/Header";
 import { Sidebar } from "./components/common/Sidebar";
@@ -7,6 +8,8 @@ import { QuickAddModal } from "./components/common/QuickAddModal";
 import { GlobalSearchModal } from "./components/common/GlobalSearchModal";
 import { OnboardingModal } from "./components/common/OnboardingModal";
 import { PWAInstallBanner } from "./components/common/PWAInstallBanner";
+import { AuthModal } from "./components/auth/AuthModal";
+import { MigrationModal } from "./components/migration/MigrationModal";
 
 import { DashboardView } from "./components/dashboard/DashboardView";
 import { CropsView } from "./components/crops/CropsView";
@@ -53,14 +56,18 @@ const AppContent: React.FC = () => {
       <GlobalSearchModal />
       <OnboardingModal />
       <PWAInstallBanner />
+      <AuthModal />
+      <MigrationModal />
     </div>
   );
 };
 
 export default function App() {
   return (
-    <CultivaProvider>
-      <AppContent />
-    </CultivaProvider>
+    <AuthProvider>
+      <CultivaProvider>
+        <AppContent />
+      </CultivaProvider>
+    </AuthProvider>
   );
 }
