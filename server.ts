@@ -36,6 +36,8 @@ function getGeminiClient() {
 }
 
 app.get("/api/health", (req, res) => {
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
+  const supabasePublicKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "";
   res.json({
     status: "ok",
     app: "Cultiva",
@@ -43,6 +45,9 @@ app.get("/api/health", (req, res) => {
     environment: process.env.NODE_ENV || "development",
     port: PORT,
     aiConfigured: Boolean(process.env.GEMINI_API_KEY),
+    supabaseConfigured: Boolean(supabaseUrl.trim() && supabasePublicKey.trim()),
+    supabaseUrlConfigured: Boolean(supabaseUrl.trim()),
+    supabasePublicKeyConfigured: Boolean(supabasePublicKey.trim()),
     timestamp: new Date().toISOString(),
   });
 });
