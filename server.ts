@@ -16,7 +16,6 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// Lazy initialize Gemini API client with required User-Agent
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient() {
   if (!aiClient) {
@@ -36,7 +35,6 @@ function getGeminiClient() {
   return aiClient;
 }
 
-// Health check endpoint (Used by Render for zero-downtime health verification)
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
@@ -49,7 +47,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// 1. Analyze Crop Endpoint
 app.post("/api/gemini/analyze-crop", async (req, res) => {
   try {
     const { crop, plants, logs, tasks, alerts } = req.body;
@@ -114,34 +111,25 @@ Devuelve únicamente un JSON válido con el siguiente formato:
   }
 });
 
-// 2. Analyze Photo Endpoint (Vision)
 app.post("/api/gemini/analyze-photo", async (req, res) => {
   try {
     const { imageBase64, mimeType = "image/jpeg", plantName, cropDay, notes } = req.body;
-
     if (!imageBase64) {
       return res.status(400).json({ success: false, error: "No se proporcionó imagen" });
     }
-
     const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const ai = getGeminiClient();
-
     if (!process.env.GEMINI_API_KEY) {
       return res.json({
         success: true,
         analysis: {
           observations: "Se observa follaje con tonalidad verde uniforme y desarrollo foliar estructurado. La morfología general presenta buena turgencia.",
-          visualFeatures: [
-            "Coloración foliar saludable sin clorosis evidente en hojas superiores",
-            "Entrenudos con espaciado regular",
-            "Turgencia foliar adecuada"
-          ],
+          visualFeatures: ["Coloración foliar saludable sin clorosis evidente en hojas superiores", "Entrenudos con espaciado regular", "Turgencia foliar adecuada"],
           pointsToWatch: "Monitorear posibles variaciones de color en hojas basales y registrar altura en el próximo ciclo.",
           cautiousNote: "Esta observación es meramente descriptiva y orientativa. Registrá nuevas fotos en 48-72hs para evaluar evolución.",
         },
       });
     }
-
     const systemInstruction = `Sos "Cultiva IA", un observador botánico para autocultivos domésticos.
 INSTRUCCIONES CLAVE:
 1. Describe ÚNICAMENTE características visuales observables de la planta (coloración, manchas, vigor foliar, forma, entrenudos, signos de deshidratación o excesos aparentes).
@@ -152,7 +140,6 @@ INSTRUCCIONES CLAVE:
    - "Presenta características visuales de..."
    - "Sería conveniente observar nuevamente en las próximas 48hs..."
 4. Responde en español en formato JSON.`;
-
     const prompt = `Analiza esta fotografía botánica de la planta "${plantName || "Planta"}" (Día de cultivo: ${cropDay || "N/D"}). Notas del cultivador: "${notes || "Sin notas adicionales"}".
 
 Devuelve ÚNICAMENTE un JSON con:
@@ -162,63 +149,33 @@ Devuelve ÚNICAMENTE un JSON con:
   "pointsToWatch": "Zonas o detalles que convendría volver a fotografiar o vigilar",
   "cautiousNote": "Nota de cautela y sugerencia de seguimiento temporal"
 }`;
-
     const response = await ai.models.generateContent({
       model: "gemini-3.7-flash",
-      contents: {
-        parts: [
-          {
-            inlineData: {
-              data: cleanBase64,
-              mimeType: mimeType || "image/jpeg",
-            },
-          },
-          { text: prompt },
-        ],
-      },
-      config: {
-        systemInstruction,
-        responseMimeType: "application/json",
-      },
+      contents: { parts: [{ inlineData: { data: cleanBase64, mimeType: mimeType || "image/jpeg" } }, { text: prompt }] },
+      config: { systemInstruction, responseMimeType: "application/json" },
     });
-
     const text = response.text || "{}";
     const data = JSON.parse(text);
     res.json({ success: true, analysis: data });
   } catch (error: any) {
     console.error("Error analyzing photo:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message || "Error al analizar la fotografía con Gemini",
-    });
+    res.status(500).json({ success: false, error: error.message || "Error al analizar la fotografía con Gemini" });
   }
 });
 
-// 3. Contextual Chat Endpoint
 app.post("/api/gemini/chat", async (req, res) => {
   try {
     const { message, history = [], context } = req.body;
     const ai = getGeminiClient();
-
-    if (!message) {
-      return res.status(400).json({ success: false, error: "Mensaje requerido" });
-    }
-
+    if (!message) return res.status(400).json({ success: false, error: "Mensaje requerido" });
     if (!process.env.GEMINI_API_KEY) {
       let reply = `Basándome en los registros de tu cultivo "${context?.crop?.name || "Cultivo Activo"}": `;
-      if (message.toLowerCase().includes("riego")) {
-        reply += `El último registro de riego fue el ${context?.lastWatering || "hace 2 días"}. Los niveles de humedad se mantienen estables.`;
-      } else if (message.toLowerCase().includes("tarea") || message.toLowerCase().includes("pendiente")) {
-        const count = context?.pendingTasksCount || 2;
-        reply += `Tenés ${count} tareas pendientes, entre ellas: ${context?.nextTaskTitle || "Revisar sustrato y medir pH"}.`;
-      } else if (message.toLowerCase().includes("planta")) {
-        reply += `Tu cultivo cuenta con ${context?.plantsCount || 3} plantas registradas en etapa ${context?.crop?.stage || "Vegetativo"}.`;
-      } else {
-        reply += `He revisado tus datos. El cultivo lleva ${context?.crop?.currentDay || 35} días. ¿Te gustaría registrar una nueva medición, analizar una foto o revisar las tareas del calendario?`;
-      }
+      if (message.toLowerCase().includes("riego")) reply += `El último registro de riego fue el ${context?.lastWatering || "hace 2 días"}. Los niveles de humedad se mantienen estables.`;
+      else if (message.toLowerCase().includes("tarea") || message.toLowerCase().includes("pendiente")) reply += `Tenés ${context?.pendingTasksCount || 2} tareas pendientes, entre ellas: ${context?.nextTaskTitle || "Revisar sustrato y medir pH"}.`;
+      else if (message.toLowerCase().includes("planta")) reply += `Tu cultivo cuenta con ${context?.plantsCount || 3} plantas registradas en etapa ${context?.crop?.stage || "Vegetativo"}.`;
+      else reply += `He revisado tus datos. El cultivo lleva ${context?.crop?.currentDay || 35} días. ¿Te gustaría registrar una nueva medición, analizar una foto o revisar las tareas del calendario?`;
       return res.json({ success: true, reply });
     }
-
     const systemInstruction = `Sos "Cultiva IA", el copiloto inteligente integrado de la app Cultiva.
 Conocés el contexto exacto del cultivo activo del usuario, sus plantas, registros históricos, fotos y tareas.
 REGLAS:
@@ -229,59 +186,27 @@ REGLAS:
 
 Contexto del Cultivo del Usuario:
 ${JSON.stringify(context, null, 2)}`;
-
-    // Build contents for multi-turn chat if needed
-    const contents = [
-      ...history.map((h: any) => ({
-        role: h.role === "assistant" ? "model" : "user",
-        parts: [{ text: h.content }],
-      })),
-      {
-        role: "user",
-        parts: [{ text: message }],
-      },
-    ];
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
-      contents,
-      config: {
-        systemInstruction,
-      },
-    });
-
-    const reply = response.text || "No pude generar una respuesta en este momento.";
-    res.json({ success: true, reply });
+    const contents = [...history.map((h: any) => ({ role: h.role === "assistant" ? "model" : "user", parts: [{ text: h.content }] })), { role: "user", parts: [{ text: message }] }];
+    const response = await ai.models.generateContent({ model: "gemini-3.7-flash", contents, config: { systemInstruction } });
+    res.json({ success: true, reply: response.text || "No pude generar una respuesta en este momento." });
   } catch (error: any) {
     console.error("Error in chat:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message || "Error en el chat de IA",
-    });
+    res.status(500).json({ success: false, error: error.message || "Error en el chat de IA" });
   }
 });
 
-// 4. Compare Crops AI Analysis
 app.post("/api/gemini/compare-crops", async (req, res) => {
   try {
     const { cropA, cropB } = req.body;
     const ai = getGeminiClient();
-
     if (!process.env.GEMINI_API_KEY) {
-      return res.json({
-        success: true,
-        comparison: {
-          overview: `Comparando "${cropA?.name || "Cultivo A"}" con "${cropB?.name || "Cultivo B"}".`,
-          durationDiff: `El Cultivo A duró ${cropA?.totalDays || 70} días frente a ${cropB?.totalDays || 65} días del Cultivo B.`,
-          metricsComparison: "Ambos cultivos mantuvieron promedios térmicos similares (23.5°C vs 24.1°C), con mayor estabilidad de humedad en el segundo.",
-          keyLearnings: [
-            "Mayor frecuencia de registros fotográficos en el cultivo más reciente.",
-            "Mejor control de riegos regulares reflejado en el vigor registrado.",
-          ],
-        },
-      });
+      return res.json({ success: true, comparison: {
+        overview: `Comparando "${cropA?.name || "Cultivo A"}" con "${cropB?.name || "Cultivo B"}".`,
+        durationDiff: `El Cultivo A duró ${cropA?.totalDays || 70} días frente a ${cropB?.totalDays || 65} días del Cultivo B.`,
+        metricsComparison: "Ambos cultivos mantuvieron promedios térmicos similares (23.5°C vs 24.1°C), con mayor estabilidad de humedad en el segundo.",
+        keyLearnings: ["Mayor frecuencia de registros fotográficos en el cultivo más reciente.", "Mejor control de riegos regulares reflejado en el vigor registrado."],
+      }});
     }
-
     const prompt = `Compara estos dos cultivos históricos y destaca diferencias en duración, estabilidad de parámetros ambientales, cantidad de registros y observaciones clave:
 Cultivo A: ${JSON.stringify(cropA, null, 2)}
 Cultivo B: ${JSON.stringify(cropB, null, 2)}
@@ -293,42 +218,34 @@ Devuelve únicamente un JSON:
   "metricsComparison": "Comparación de temperatura/humedad/frecuencia de registros",
   "keyLearnings": ["Aprendizaje 1", "Aprendizaje 2", "Aprendizaje 3"]
 }`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
-    });
-
-    const data = JSON.parse(response.text || "{}");
-    res.json({ success: true, comparison: data });
+    const response = await ai.models.generateContent({ model: "gemini-3.7-flash", contents: prompt, config: { responseMimeType: "application/json" } });
+    res.json({ success: true, comparison: JSON.parse(response.text || "{}") });
   } catch (error: any) {
     console.error("Error comparing crops:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// Vite Middleware for SPA development & static serving for production
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
+    const vite = await createViteServer({ server: { middlewareMode: true }, appType: "spa" });
     app.use(vite.middlewares);
   } else {
-    // Resolve dist path robustly across local build and Render production
-    const distPath = fs.existsSync(path.join(__dirname, "index.html"))
-      ? __dirname
-      : path.join(process.cwd(), "dist");
-
+    const distPath = fs.existsSync(path.join(__dirname, "index.html")) ? __dirname : path.join(process.cwd(), "dist");
     console.log(`[Production] Serving static frontend from: ${distPath}`);
-    app.use(express.static(distPath));
+
+    // Do not let express.static serve index.html directly: the SPA HTML must receive
+    // the public Supabase runtime configuration from Render's process environment.
+    app.use(express.static(distPath, { index: false }));
+
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      const indexPath = path.join(distPath, "index.html");
+      const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
+      const supabasePublicKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "";
+      const runtimeConfig = `<script>window.__CULTIVA_CONFIG__=${JSON.stringify({ supabaseUrl, supabasePublicKey })};</script>`;
+      const html = fs.readFileSync(indexPath, "utf8").replace("</head>", `${runtimeConfig}</head>`);
+      res.type("html").send(html);
     });
   }
 
@@ -338,4 +255,3 @@ async function startServer() {
 }
 
 startServer();
-
