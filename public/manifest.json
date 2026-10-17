@@ -1,8 +1,8 @@
 {
   "id": "/?source=pwa",
-  "name": "Cultiva — Seguimiento y Asistente de Autocultivo",
+  "name": "Cultiva — Seguimiento de Cultivos",
   "short_name": "Cultiva",
-  "description": "Aplicación de seguimiento agronómico, diario de cultivo, tablas Top Crop y asistente botánico offline-ready.",
+  "description": "Seguimiento personal de cultivos, plantas, tareas, nutrición y fotografías.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

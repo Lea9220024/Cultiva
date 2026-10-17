@@ -1,1 +1,1 @@
-{"name":"Cultiva","description":"Aplicación tecnológica de seguimiento, diario y gestión de autocultivo doméstico con métricas y asistente IA.","requestFramePermissions":["camera"],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}
+{"name":"Cultiva","description":"Aplicación personal para seguimiento de cultivos, diario, tareas, nutrición y fotografías.","requestFramePermissions":["camera"],"majorCapabilities":["LOCAL_CULTIVATION_TRACKING","OFFLINE_DATA_MANAGEMENT"]}

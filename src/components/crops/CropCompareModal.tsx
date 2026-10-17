@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  X,
-  ArrowRightLeft,
-  Sparkles,
-  Sprout,
-  Thermometer,
-  Droplets,
-  CheckCircle2,
-  Calendar,
-} from "lucide-react";
+import { X, ArrowRightLeft } from "lucide-react";
 import { useCultiva } from "../../context/CultivaContext";
 import { Cultivo } from "../../types";
 
@@ -21,9 +12,6 @@ export const CropCompareModal: React.FC<Props> = ({ onClose }) => {
 
   const [cropIdA, setCropIdA] = useState<string>(cultivos[0]?.id || "");
   const [cropIdB, setCropIdB] = useState<string>(cultivos[1]?.id || cultivos[0]?.id || "");
-
-  const [loadingAi, setLoadingAi] = useState<boolean>(false);
-  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
 
   const cropA = cultivos.find((c) => c.id === cropIdA);
   const cropB = cultivos.find((c) => c.id === cropIdB);
@@ -40,46 +28,6 @@ export const CropCompareModal: React.FC<Props> = ({ onClose }) => {
   const daysB = cropB
     ? Math.max(1, Math.floor((new Date().getTime() - new Date(cropB.startDate).getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
-
-  const handleRunAiComparison = async () => {
-    if (!cropA || !cropB) return;
-    setLoadingAi(true);
-    try {
-      const res = await fetch("/api/gemini/compare-crops", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cropA: {
-            name: cropA.name,
-            method: cropA.method,
-            stage: cropA.stage,
-            days: daysA,
-            plantsCount: plantsA.length,
-            genetic: cropA.geneticName,
-          },
-          cropB: {
-            name: cropB.name,
-            method: cropB.method,
-            stage: cropB.stage,
-            days: daysB,
-            plantsCount: plantsB.length,
-            genetic: cropB.geneticName,
-          },
-        }),
-      });
-      const data = await res.json();
-      if (data.comparison) {
-        setAiAnalysis(data.comparison);
-      } else {
-        setAiAnalysis("No se pudo obtener el análisis comparativo.");
-      }
-    } catch (e) {
-      console.error(e);
-      setAiAnalysis("Error al contactar con Cultiva IA.");
-    } finally {
-      setLoadingAi(false);
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-fade-in">
@@ -223,30 +171,6 @@ export const CropCompareModal: React.FC<Props> = ({ onClose }) => {
             </div>
           )}
 
-          {/* AI Comparison Generator Trigger */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-emerald-500" />
-                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100">
-                  Análisis Comparativo con Cultiva IA
-                </span>
-              </div>
-              <button
-                onClick={handleRunAiComparison}
-                disabled={loadingAi}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
-              >
-                {loadingAi ? "Analizando..." : "Generar Comparativa IA"}
-              </button>
-            </div>
-
-            {aiAnalysis && (
-              <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                {aiAnalysis}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

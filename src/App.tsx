@@ -15,7 +15,6 @@ import { DiaryView } from "./components/diary/DiaryView";
 import { NutritionView } from "./components/nutrition/NutritionView";
 import { EncyclopediaView } from "./components/encyclopedia/EncyclopediaView";
 import { PhotoGalleryView } from "./components/photos/PhotoGalleryView";
-import { CultivaAIView } from "./components/ai/CultivaAIView";
 import { SettingsView } from "./components/settings/SettingsView";
 
 const AppContent: React.FC = () => {
@@ -40,7 +39,6 @@ const AppContent: React.FC = () => {
           {currentTab === "encyclopedia" && <EncyclopediaView />}
           {currentTab === "tasks" && <TasksView />}
           {currentTab === "photos" && <PhotoGalleryView />}
-          {currentTab === "ai" && <CultivaAIView />}
           {currentTab === "settings" && <SettingsView />}
         </main>
       </div>
