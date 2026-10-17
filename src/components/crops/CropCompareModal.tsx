@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  X,
-  ArrowRightLeft,
-  Sprout,
-  Thermometer,
-  Droplets,
-  CheckCircle2,
-  Calendar,
-} from "lucide-react";
+import { X, ArrowRightLeft } from "lucide-react";
 import { useCultiva } from "../../context/CultivaContext";
 import { Cultivo } from "../../types";
 
