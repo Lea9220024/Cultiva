@@ -40,7 +40,6 @@ export type NavTab =
   | "photos"
   | "nutrition"
   | "encyclopedia"
-  | "ai"
   | "settings";
 
 export type QuickAddType = "registro" | "fertilizacion" | "riego" | "tarea" | "foto" | "planta";
