@@ -1,29 +1,14 @@
 import React from "react";
-import {
-  Home,
-  Sprout,
-  CalendarCheck,
-  BookOpen,
-  Image as ImageIcon,
-  FlaskConical,
-  GraduationCap,
-  Settings,
-  PlusCircle,
-  Award,
-} from "lucide-react";
 import { useCultiva, NavTab } from "../../context/CultivaContext";
 
 export const Sidebar: React.FC = () => {
   const {
     currentTab,
     setCurrentTab,
-    activeCrop,
     activeCropPlants,
     activeCropLogs,
     activeCropFertilizations,
-    achievements,
     learningProgress,
-    setIsQuickAddOpen,
   } = useCultiva();
 
   const mainNav: { id: NavTab; label: string; icon: string; badge?: string | number }[] = [
