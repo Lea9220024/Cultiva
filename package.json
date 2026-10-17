@@ -1,7 +1,7 @@
 {
   "name": "cultiva",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Cultiva — Seguimiento, Diario, Nutrición Top Crop y Asistente de Autocultivo",
   "type": "module",
   "scripts": {
