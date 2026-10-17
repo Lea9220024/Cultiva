@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import {
   Sprout,
   Sun,
@@ -6,15 +6,8 @@ import {
   Search,
   Plus,
   Sparkles,
-  ChevronDown,
-  User,
-  LogOut,
-  Settings,
-  Cloud,
-  ShieldCheck,
 } from "lucide-react";
 import { useCultiva } from "../../context/CultivaContext";
-import { useAuth } from "../../context/AuthContext";
 
 export const Header: React.FC = () => {
   const {
@@ -28,26 +21,7 @@ export const Header: React.FC = () => {
     setCurrentTab,
   } = useCultiva();
 
-  const {
-    user,
-    profile,
-    isAuthenticated,
-    setIsAuthModalOpen,
-    signOut,
-  } = useAuth();
-
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsUserMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const displayName = profile?.displayName || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Cultivador";
@@ -135,79 +109,6 @@ export const Header: React.FC = () => {
               <span className="hidden sm:inline">Noche</span>
             </button>
           </div>
-
-          {/* User Auth Section */}
-          {!isAuthenticated ? (
-            <button
-              onClick={() => setIsAuthModalOpen(true, "login")}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/80 dark:border-emerald-800/60 transition-all cursor-pointer shadow-2xs"
-              title="Iniciar sesión en Cultiva Cloud"
-            >
-              <Cloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span className="hidden sm:inline">Ingresar</span>
-            </button>
-          ) : (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 p-1 pl-2.5 pr-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
-              >
-                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 max-w-[100px] truncate hidden md:inline">
-                  {displayName}
-                </span>
-                {profile?.avatarUrl ? (
-                  <img
-                    src={profile.avatarUrl}
-                    alt={displayName}
-                    className="w-7 h-7 rounded-full object-cover border border-emerald-500/40"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center shadow-xs">
-                    {initials}
-                  </div>
-                )}
-                <ChevronDown className="w-3 h-3 text-zinc-400" />
-              </button>
-
-              {/* User Dropdown Popover */}
-              {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800 mb-1">
-                    <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                      {displayName}
-                    </p>
-                    <p className="text-[10px] text-zinc-500 truncate">{user?.email}</p>
-                    <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>Sesión activa</span>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setCurrentTab("settings");
-                      setIsUserMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer text-left"
-                  >
-                    <Settings className="w-4 h-4 text-zinc-400" />
-                    <span>Mi Perfil & Ajustes</span>
-                  </button>
-
-                  <button
-                    onClick={async () => {
-                      setIsUserMenuOpen(false);
-                      await signOut();
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer text-left mt-1"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Cerrar Sesión</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Bento Round Add Button */}
           <button
