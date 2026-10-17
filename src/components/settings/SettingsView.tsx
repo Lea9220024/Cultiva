@@ -32,6 +32,7 @@ import { Smartphone, CheckCircle2, RefreshCw } from "lucide-react";
 export const SettingsView: React.FC = () => {
   const {
     cultivos,
+    activeCropId,
     plantas,
     registros,
     fertilizationLogs,
@@ -40,6 +41,7 @@ export const SettingsView: React.FC = () => {
     fotos,
     achievements,
     learningProgress,
+    eventos,
     userPreferences,
     updatePreferences,
     toggleTheme,
@@ -86,13 +88,17 @@ export const SettingsView: React.FC = () => {
 
   const handleExportJSON = () => {
     exportToJSON({
+      schemaVersion: 2,
       cultivos,
+      activeCropId,
       plantas,
       registros,
       fertilizationLogs,
       userFertilizers,
       tareas,
       fotos,
+      eventos,
+      achievements,
       learningProgress,
       userPreferences,
       exportedAt: new Date().toISOString(),
@@ -108,29 +114,86 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const content = event.target?.result as string;
-        const data = JSON.parse(content);
-        if (data.cultivos && data.plantas) {
-          localStorage.setItem("cultiva_cultivos_v2", JSON.stringify(data.cultivos));
-          localStorage.setItem("cultiva_plantas_v2", JSON.stringify(data.plantas));
-          if (data.registros) localStorage.setItem("cultiva_registros_v2", JSON.stringify(data.registros));
-          if (data.fertilizaciones) localStorage.setItem("cultiva_fertilizaciones_v2", JSON.stringify(data.fertilizaciones));
-          if (data.tareas) localStorage.setItem("cultiva_tareas_v2", JSON.stringify(data.tareas));
-          if (data.fotos) localStorage.setItem("cultiva_fotos_v2", JSON.stringify(data.fotos));
-          if (data.learningProgress) localStorage.setItem("cultiva_learning_v2", JSON.stringify(data.learningProgress));
-          window.location.reload();
-        } else {
-          alert("El archivo no posee una estructura válida de Cultiva V2.");
+        const parsed: unknown = JSON.parse(String(event.target?.result ?? ""));
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+          throw new Error("El archivo no contiene un objeto JSON válido.");
         }
-      } catch (err) {
-        alert("Error al procesar el archivo JSON.");
+
+        const data = parsed as Record<string, unknown>;
+        if (!Array.isArray(data.cultivos) || !Array.isArray(data.plantas)) {
+          throw new Error("El backup debe incluir las listas de cultivos y plantas.");
+        }
+
+        const pick = (...values: unknown[]) => values.find((value) => value !== undefined);
+        const datasets: Array<[string, unknown, "array" | "object"]> = [
+          ["cultiva_v2_cultivos", data.cultivos, "array"],
+          ["cultiva_v2_plantas", data.plantas, "array"],
+        ];
+        const optionalDatasets: Array<[string, unknown, "array" | "object"]> = [
+          ["cultiva_v2_registros", data.registros, "array"],
+          ["cultiva_v2_fertilizations", pick(data.fertilizationLogs, data.fertilizaciones, data.fertilizations), "array"],
+          ["cultiva_v2_user_fertilizers", data.userFertilizers, "array"],
+          ["cultiva_v2_tareas", data.tareas, "array"],
+          ["cultiva_v2_fotos", data.fotos, "array"],
+          ["cultiva_v2_eventos", pick(data.eventos, data.events), "array"],
+          ["cultiva_v2_learning", pick(data.learningProgress, data.learning), "object"],
+          ["cultiva_v2_achievements", data.achievements, "array"],
+          ["cultiva_v2_preferences", pick(data.userPreferences, data.preferences), "object"],
+        ];
+
+        for (const [key, value, expected] of [...datasets, ...optionalDatasets]) {
+          if (value === undefined) continue;
+          const valid = expected === "array" ? Array.isArray(value) : (
+            value !== null && typeof value === "object" && !Array.isArray(value)
+          );
+          if (!valid) {
+            throw new Error(`El campo "${key}" tiene un formato inválido. No se modificó ningún dato.`);
+          }
+        }
+
+        if (!window.confirm("La restauración reemplazará los conjuntos de datos incluidos en el archivo. Se recomienda exportar un backup actual antes de continuar. ¿Querés restaurarlo?")) {
+          input.value = "";
+          return;
+        }
+
+        const writes = [...datasets, ...optionalDatasets].filter((entry) => entry[1] !== undefined);
+        const previous = new Map<string, string | null>();
+        try {
+          for (const [key] of writes) previous.set(key, localStorage.getItem(key));
+          for (const [key, value] of writes) localStorage.setItem(key, JSON.stringify(value));
+        } catch (storageError) {
+          for (const [key, value] of previous) {
+            try {
+              if (value === null) localStorage.removeItem(key);
+              else localStorage.setItem(key, value);
+            } catch {
+              // Best-effort rollback if the browser storage itself is unavailable.
+            }
+          }
+          throw storageError;
+        }
+
+        alert("Backup restaurado. Cultiva se va a recargar para aplicar los datos.");
+        window.location.reload();
+      } catch (error) {
+        console.error("Error al importar backup de Cultiva:", error);
+        alert(error instanceof Error
+          ? `No se pudo restaurar el backup: ${error.message}`
+          : "No se pudo procesar el archivo JSON. No se modificaron los datos.");
+      } finally {
+        input.value = "";
       }
+    };
+    reader.onerror = () => {
+      alert("No se pudo leer el archivo seleccionado.");
+      input.value = "";
     };
     reader.readAsText(file);
   };
