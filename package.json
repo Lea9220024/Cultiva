@@ -1,7 +1,7 @@
 {
   "name": "cultiva",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Cultiva — Seguimiento, Diario, Nutrición Top Crop y Asistente de Autocultivo",
   "type": "module",
   "scripts": {
@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
-    "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/canvas-confetti": "^1.9.0",
     "@vitejs/plugin-react": "^5.0.4",

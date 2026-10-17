@@ -36,18 +36,13 @@ function getGeminiClient() {
 }
 
 app.get("/api/health", (req, res) => {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
-  const supabasePublicKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "";
   res.json({
     status: "ok",
     app: "Cultiva",
-    version: "2.1.0",
+    version: "2.2.0",
     environment: process.env.NODE_ENV || "development",
     port: PORT,
     aiConfigured: Boolean(process.env.GEMINI_API_KEY),
-    supabaseConfigured: Boolean(supabaseUrl.trim() && supabasePublicKey.trim()),
-    supabaseUrlConfigured: Boolean(supabaseUrl.trim()),
-    supabasePublicKeyConfigured: Boolean(supabasePublicKey.trim()),
     timestamp: new Date().toISOString(),
   });
 });
@@ -240,18 +235,7 @@ async function startServer() {
     const distPath = fs.existsSync(path.join(__dirname, "index.html")) ? __dirname : path.join(process.cwd(), "dist");
     console.log(`[Production] Serving static frontend from: ${distPath}`);
 
-    // Do not let express.static serve index.html directly: the SPA HTML must receive
-    // the public Supabase runtime configuration from Render's process environment.
-    app.use(express.static(distPath, { index: false }));
-
-    app.get("*", (req, res) => {
-      const indexPath = path.join(distPath, "index.html");
-      const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
-      const supabasePublicKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || "";
-      const runtimeConfig = `<script>window.__CULTIVA_CONFIG__=${JSON.stringify({ supabaseUrl, supabasePublicKey })};</script>`;
-      const html = fs.readFileSync(indexPath, "utf8").replace("</head>", `${runtimeConfig}</head>`);
-      res.type("html").send(html);
-    });
+    app.use(express.static(distPath));
   }
 
   app.listen(PORT, "0.0.0.0", () => {
