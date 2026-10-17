@@ -5,7 +5,6 @@ import {
   Moon,
   Search,
   Plus,
-  Sparkles,
   Settings,
 } from "lucide-react";
 import { useCultiva } from "../../context/CultivaContext";
@@ -19,7 +18,6 @@ export const Header: React.FC = () => {
     toggleTheme,
     setIsQuickAddOpen,
     setIsSearchOpen,
-    setCurrentTab,
   } = useCultiva();
 
   return (
@@ -64,15 +62,6 @@ export const Header: React.FC = () => {
             className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <Search className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentTab("ai")}
-            aria-label="Abrir Cultiva IA"
-            title="Cultiva IA"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors"
-          >
-            <Sparkles className="w-4 h-4" />
           </button>
           <button
             type="button"
