@@ -5,7 +5,6 @@ import {
   CalendarCheck,
   BookOpen,
   Image as ImageIcon,
-  Sparkles,
   FlaskConical,
   GraduationCap,
   Settings,
@@ -35,7 +34,6 @@ export const Sidebar: React.FC = () => {
     { id: "encyclopedia", label: "Enciclopedia", icon: "📚", badge: `${learningProgress.readArticleIds.length}/11` },
     { id: "tasks", label: "Tareas & Calendario", icon: "📅" },
     { id: "photos", label: "Galería & Evolución", icon: "🖼️" },
-    { id: "ai", label: "Asistente IA Botánico", icon: "🤖" },
   ];
 
   const secondaryNav: { id: NavTab; label: string; icon: string }[] = [
@@ -98,22 +96,6 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Bento Signature Dark Emerald Bottom Card */}
-      <div
-        onClick={() => setCurrentTab("ai")}
-        className="mt-4 p-4 bg-emerald-900 dark:bg-emerald-950 rounded-2xl text-white relative overflow-hidden cursor-pointer group shadow-md"
-      >
-        <div className="relative z-10 space-y-0.5">
-          <p className="text-[10px] font-semibold opacity-70 uppercase tracking-widest text-emerald-200">
-            Copiloto V2
-          </p>
-          <p className="text-xs font-bold text-white group-hover:text-emerald-200 transition-colors flex items-center justify-between">
-            <span>Diagnóstico IA Botánico</span>
-            <span className="text-xs">➔</span>
-          </p>
-        </div>
-        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-800 rounded-full opacity-50 group-hover:scale-125 transition-transform"></div>
-      </div>
     </aside>
   );
 };
