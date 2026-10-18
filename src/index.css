@@ -89,9 +89,9 @@
 }
 
 /* Compatibility bridge: remap existing utility colors to the new semantic palette. */
-html:not(.dark) [class*="bg-zinc-50"] { background-color: var(--ct-canvas) !important; }
-html:not(.dark) [class*="bg-zinc-100"] { background-color: var(--ct-surface-soft) !important; }
-html:not(.dark) [class*="bg-zinc-200"] { background-color: var(--ct-border) !important; }
+html:not(.dark) [class~="bg-zinc-50"], html:not(.dark) [class*="bg-zinc-50/"] { background-color: var(--ct-canvas) !important; }
+html:not(.dark) [class~="bg-zinc-100"], html:not(.dark) [class*="bg-zinc-100/"] { background-color: var(--ct-surface-soft) !important; }
+html:not(.dark) [class~="bg-zinc-200"], html:not(.dark) [class*="bg-zinc-200/"] { background-color: var(--ct-border) !important; }
 html:not(.dark) [class~="bg-white"], html:not(.dark) [class*="bg-white/"] { background-color: var(--ct-surface) !important; }
 html:not(.dark) [class*="text-zinc-900"], html:not(.dark) [class*="text-zinc-800"], html:not(.dark) [class*="text-zinc-700"] { color: var(--ct-text) !important; }
 html:not(.dark) [class*="text-zinc-600"], html:not(.dark) [class*="text-zinc-500"], html:not(.dark) [class*="text-zinc-400"] { color: var(--ct-text-muted) !important; }
