@@ -14,6 +14,7 @@ export const Header: React.FC = () => {
     cultivos,
     activeCrop,
     setActiveCropId,
+    setCurrentTab,
     userPreferences,
     toggleTheme,
     setIsQuickAddOpen,
@@ -21,7 +22,7 @@ export const Header: React.FC = () => {
   } = useCultiva();
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md transition-colors">
+    <header className="ct-header sticky top-0 z-30 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[4.5rem] flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <button
@@ -30,10 +31,10 @@ export const Header: React.FC = () => {
             className="flex items-center gap-2.5 shrink-0"
             aria-label="Ir al inicio de Cultiva"
           >
-            <span className="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
+            <span className="ct-brand-mark w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
               <Sprout className="w-5 h-5" />
             </span>
-            <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Cultiva</span>
+            <span className="ct-brand-title text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Cultiva</span>
           </button>
 
           {cultivos.length > 0 && (
@@ -59,16 +60,17 @@ export const Header: React.FC = () => {
             onClick={() => setIsSearchOpen(true)}
             aria-label="Buscar en Cultiva"
             title="Buscar"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="ct-icon-button w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <Search className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={toggleTheme}
+            aria-pressed={userPreferences.theme === "dark"}
             aria-label={userPreferences.theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
             title={userPreferences.theme === "dark" ? "Tema oscuro" : "Tema claro"}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="ct-icon-button w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             {userPreferences.theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -77,7 +79,7 @@ export const Header: React.FC = () => {
             onClick={() => setCurrentTab("settings")}
             aria-label="Abrir ajustes"
             title="Ajustes"
-            className="hidden sm:flex w-9 h-9 rounded-full items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="ct-icon-button hidden sm:flex w-9 h-9 rounded-full items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <Settings className="w-4 h-4" />
           </button>
@@ -86,7 +88,7 @@ export const Header: React.FC = () => {
             onClick={() => setIsQuickAddOpen(true)}
             aria-label="Nuevo registro rápido"
             title="Nuevo registro"
-            className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+            className="ct-primary-action w-9 h-9 sm:w-10 sm:h-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
           >
             <Plus className="w-5 h-5" />
           </button>
