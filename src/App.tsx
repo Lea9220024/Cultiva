@@ -21,7 +21,7 @@ const AppContent: React.FC = () => {
   const { currentTab } = useCultiva();
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
+    <div className="cultiva-app min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col font-sans transition-colors duration-200">
       {/* Top Bar */}
       <Header />
 
@@ -31,7 +31,7 @@ const AppContent: React.FC = () => {
         <Sidebar />
 
         {/* Dynamic Main Workspace */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden min-h-[calc(100vh-4.5rem)] pb-24 md:pb-8">
+        <main className="cultiva-workspace flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden min-h-[calc(100vh-4.5rem)] pb-24 md:pb-8">
           {currentTab === "dashboard" && <DashboardView />}
           {currentTab === "crops" && <CropsView />}
           {currentTab === "diary" && <DiaryView />}
