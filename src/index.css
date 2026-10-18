@@ -116,3 +116,67 @@ html.dark [class*="dark:text-emerald-300"], html.dark [class*="dark:text-emerald
 @supports (padding: env(safe-area-inset-bottom)) {
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+
+/* Organic Tech component polish — shared visual language across all existing views. */
+.ct-header {
+  border-color: var(--ct-border);
+  background: color-mix(in srgb, var(--ct-surface) 91%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.ct-brand-mark {
+  background: var(--ct-primary) !important;
+  color: #ffffff !important;
+  border-radius: 0.9rem !important;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--ct-primary) 18%, transparent) !important;
+}
+:root.dark .ct-brand-mark { color: #111c17 !important; }
+.ct-brand-title { letter-spacing: -0.045em; }
+.ct-icon-button {
+  border: 1px solid transparent;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+.ct-icon-button:hover {
+  background: var(--ct-surface-soft) !important;
+  color: var(--ct-text) !important;
+  border-color: var(--ct-border);
+}
+.ct-primary-action {
+  background: var(--ct-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--ct-primary) 20%, transparent) !important;
+}
+:root.dark .ct-primary-action { color: #111c17 !important; }
+.ct-primary-action:hover { filter: brightness(0.96); }
+.ct-sidebar {
+  background: var(--ct-surface);
+  border-color: var(--ct-border);
+}
+.ct-nav-item {
+  min-height: 2.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.9rem !important;
+}
+.ct-nav-item:hover { background: var(--ct-surface-soft) !important; }
+.ct-nav-item[class*="bg-emerald-50"],
+.ct-nav-item[class*="dark:bg-emerald-950"] {
+  background: var(--ct-surface-soft) !important;
+  border-color: var(--ct-border);
+  color: var(--ct-primary) !important;
+}
+.ct-bottom-nav {
+  background: color-mix(in srgb, var(--ct-surface) 94%, transparent);
+  border-color: var(--ct-border);
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+.ct-bottom-nav-item { min-width: 0; }
+.ct-bottom-nav-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ct-mobile-add { border-color: var(--ct-surface) !important; }
+.cultiva-workspace { min-width: 0; }
+.cultiva-workspace > * { min-width: 0; }
+[class~="rounded-2xl"], [class~="rounded-[2rem]"] { border-radius: var(--ct-radius-panel); }
+[class~="rounded-xl"] { border-radius: 1rem; }
+input, select, textarea {
+  accent-color: var(--ct-primary);
+}
