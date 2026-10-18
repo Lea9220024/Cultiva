@@ -7,8 +7,16 @@
     <meta name="description" content="Aplicación personal de seguimiento, diario de cultivo, nutrición, enciclopedia botánica y fotografías." />
     
     <!-- PWA & Android Meta Tags -->
-    <meta name="theme-color" content="#052e16" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#111c17" />
+    <script>
+      try {
+        const saved = localStorage.getItem("cultiva_v2_preferences") || localStorage.getItem("cultiva_v1_prefs");
+        const preferences = saved ? JSON.parse(saved) : null;
+        document.documentElement.classList.toggle("dark", preferences?.theme ? preferences.theme === "dark" : true);
+      } catch {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -17,7 +25,7 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- Open Graph & Social Cards -->
-    <meta property="og:title" content="Cultiva — Seguimiento y Asistente de Autocultivo" />
+    <meta property="og:title" content="Cultiva — Seguimiento de Cultivos" />
     <meta property="og:description" content="Aplicación personal de seguimiento de cultivos, nutrición, enciclopedia botánica y fotografías." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/icons/icon-512.png" />
