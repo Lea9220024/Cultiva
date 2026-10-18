@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Cultiva 2.3.0 — Organic Tech. Presentation tokens only; application data stays untouched. */
 @theme {
