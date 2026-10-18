@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
             aria-pressed={userPreferences.theme === "dark"}
             aria-label={userPreferences.theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
             title={userPreferences.theme === "dark" ? "Tema oscuro" : "Tema claro"}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="ct-icon-button w-9 h-9 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             {userPreferences.theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
