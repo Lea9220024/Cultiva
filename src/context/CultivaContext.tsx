@@ -256,6 +256,13 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => { localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements)); }, [achievements]);
   useEffect(() => { localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(userPreferences)); }, [userPreferences]);
 
+  // Keep the document theme aligned with the saved preference on first render and after updates.
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", userPreferences.theme === "dark");
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", userPreferences.theme === "dark" ? "#111c17" : "#f5f4ec");
+  }, [userPreferences.theme]);
+
   const activeCrop = cultivos.find((c) => c.id === activeCropId) || null;
   const activeCropPlants = plantas.filter((p) => p.cultivoId === activeCropId);
   const activeCropLogs = registros.filter((r) => r.cultivoId === activeCropId);
@@ -269,8 +276,6 @@ export const CultivaProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const toggleTheme = () => {
     setUserPreferences((prev) => {
       const nextTheme = prev.theme === "dark" ? "light" : "dark";
-      if (nextTheme === "dark") document.documentElement.classList.add("dark");
-      else document.documentElement.classList.remove("dark");
       return { ...prev, theme: nextTheme };
     });
   };
