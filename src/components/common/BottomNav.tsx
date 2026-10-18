@@ -59,7 +59,7 @@ export const BottomNav: React.FC = () => {
             <button
               key={item.id}
               onClick={() => setCurrentTab(item.id)}
-              className={`flex-1 flex flex-col items-center justify-center h-full py-1 transition-colors ${
+              className={`ct-bottom-nav-item flex-1 flex flex-col items-center justify-center h-full py-1 transition-colors ${
                 isActive
                   ? "text-emerald-600 dark:text-emerald-400 font-bold"
                   : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
