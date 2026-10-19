@@ -240,7 +240,7 @@ export const NutritionView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="ct-view ct-nutrition-view space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-950/40 via-zinc-900 to-zinc-900 border border-emerald-900/30 p-5 sm:p-6 rounded-2xl shadow-sm">
         <div>
