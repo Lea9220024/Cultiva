@@ -185,3 +185,48 @@ html.dark [class*="dark:text-emerald-300"], html.dark [class*="dark:text-emerald
 input, select, textarea {
   accent-color: var(--ct-primary);
 }
+
+/* Stage 2 — dashboard surfaces and responsive hierarchy. */
+.ct-dashboard { color: var(--ct-text); }
+.ct-dashboard-card {
+  background: var(--ct-surface) !important;
+  border-color: var(--ct-border) !important;
+  border-radius: var(--ct-radius-panel) !important;
+  box-shadow: var(--ct-shadow-soft) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+.ct-dashboard-card:hover {
+  border-color: color-mix(in srgb, var(--ct-secondary) 55%, var(--ct-border)) !important;
+}
+.ct-dashboard-feature {
+  background:
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--ct-sage) 13%, transparent), transparent 48%),
+    var(--ct-surface) !important;
+}
+.ct-dashboard-card [class~="bg-zinc-50"],
+.ct-dashboard-card [class~="bg-zinc-800/60"],
+.ct-dashboard-card [class~="bg-zinc-800/50"] {
+  background: var(--ct-surface-soft) !important;
+  border-color: var(--ct-border) !important;
+}
+.ct-dashboard-card [class*="rounded-2xl"] { border-radius: 1rem !important; }
+.ct-dashboard h1, .ct-dashboard h2, .ct-dashboard h3 {
+  letter-spacing: -0.025em;
+}
+.ct-dashboard-empty {
+  padding-top: clamp(3rem, 10vh, 6rem);
+  padding-bottom: clamp(3rem, 10vh, 6rem);
+}
+.ct-plant-card { cursor: pointer; }
+.ct-plant-card:focus-visible { outline: 2px solid var(--ct-focus); outline-offset: 3px; }
+@media (max-width: 639px) {
+  .ct-dashboard { gap: 1rem; }
+  .ct-dashboard-card { padding: 1.1rem; }
+  .ct-dashboard-feature { padding: 1.25rem; }
+  .ct-dashboard-feature .grid-cols-3 { gap: 0.45rem; }
+  .ct-dashboard-feature .grid-cols-3 > div { padding: 0.6rem 0.45rem; min-width: 0; }
+  .ct-dashboard-feature .grid-cols-3 p { overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ct-dashboard-card { transition: none; }
+}

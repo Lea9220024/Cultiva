@@ -114,7 +114,7 @@ export const DashboardView: React.FC = () => {
 
   if (!activeCrop || !chrono) {
     return (
-      <div className="max-w-4xl mx-auto py-12 px-4 text-center space-y-6">
+      <div className="ct-dashboard ct-dashboard-empty max-w-4xl mx-auto py-12 px-4 text-center space-y-6">
         <div className="w-16 h-16 rounded-[2rem] bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto shadow-md">
           <Sprout className="w-8 h-8" />
         </div>
@@ -138,7 +138,7 @@ export const DashboardView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="ct-dashboard space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Header of the Bento Dashboard */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -209,7 +209,7 @@ export const DashboardView: React.FC = () => {
       {/* BENTO GRID (Modular Container) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. MAIN FEATURE CROP BENTO CARD (2 cols x 2 rows on large) */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 ct-dashboard-card ct-dashboard-feature bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 shadow-sm flex flex-col justify-between relative overflow-hidden group">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-emerald-600 dark:text-emerald-400 font-bold text-xs tracking-widest uppercase mb-1 flex items-center gap-1.5">
@@ -304,7 +304,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* 2. TEMPERATURE & VPD SQUARE BENTO CARD */}
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
+        <div className="ct-dashboard-card bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="w-10 h-10 bg-orange-50 dark:bg-orange-950/40 rounded-2xl flex items-center justify-center text-xl shadow-2xs">
               🌡️
@@ -326,7 +326,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* 3. HUMIDITY & WATERING SQUARE BENTO CARD */}
-        <div className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
+        <div className="ct-dashboard-card bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="w-10 h-10 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center text-xl shadow-2xs">
               💧
@@ -346,7 +346,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* 4. NUTRITION BOTANICAL BENTO CARD (1 col x 2 rows) */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-1 row-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
+        <div className="col-span-1 md:col-span-2 lg:col-span-1 row-span-2 ct-dashboard-card bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -389,7 +389,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* 5. EDUCATIONAL LEARNING BENTO CARD (2 cols span) */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between space-y-3">
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 ct-dashboard-card bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <GraduationCap className="w-4 h-4 text-emerald-600" />
@@ -516,7 +516,7 @@ export const DashboardView: React.FC = () => {
               <div
                 key={plant.id}
                 onClick={() => setSelectedPlantIdForModal(plant.id)}
-                className="p-5 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs hover:border-emerald-500 cursor-pointer transition-all flex flex-col justify-between space-y-3 group"
+                className="ct-dashboard-card ct-plant-card p-5 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xs hover:border-emerald-500 cursor-pointer transition-all flex flex-col justify-between space-y-3 group"
               >
                 <div className="flex space-x-3.5 items-start">
                   <img
