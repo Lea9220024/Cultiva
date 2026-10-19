@@ -85,7 +85,7 @@ export const EncyclopediaView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="ct-view ct-encyclopedia-view space-y-6 pb-12">
       {/* 1. Header Hero Card */}
       <div className="p-6 sm:p-8 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
