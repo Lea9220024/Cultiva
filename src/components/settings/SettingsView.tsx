@@ -183,7 +183,7 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-12">
+    <div className="ct-view ct-settings-view space-y-6 pb-12">
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2.5">
