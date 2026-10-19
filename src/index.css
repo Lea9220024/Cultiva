@@ -230,3 +230,38 @@ input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   .ct-dashboard-card { transition: none; }
 }
+
+
+/* Stage 2 — consistent Organic Tech styling across primary views. */
+.ct-view { color: var(--ct-text); }
+.ct-view > [class*="bg-white"],
+.ct-view [class*="rounded-[2rem]"][class*="border"],
+.ct-view [class*="shadow-2xs"][class*="bg-white"],
+.ct-view [class*="shadow-sm"][class*="bg-white"] {
+  border-color: var(--ct-border);
+}
+.ct-view input, .ct-view select, .ct-view textarea {
+  background-color: var(--ct-surface-soft);
+  color: var(--ct-text);
+  border-color: var(--ct-border);
+}
+.ct-view input::placeholder, .ct-view textarea::placeholder { color: var(--ct-text-muted); opacity: .85; }
+.ct-view button { transition-property: background-color, color, border-color, box-shadow, transform; transition-duration: 160ms; }
+.ct-view button:focus-visible, .ct-view input:focus-visible, .ct-view select:focus-visible, .ct-view textarea:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 2px;
+}
+.ct-view [class*="bg-white"][class*="border"],
+.ct-view [class*="bg-zinc-900"][class*="border"],
+.ct-view [class*="bg-zinc-800"][class*="border"] {
+  border-color: var(--ct-border);
+}
+html:not(.dark) .ct-view [class*="bg-emerald-50"] { background-color: color-mix(in srgb, var(--ct-sage) 16%, var(--ct-surface)) !important; }
+html:not(.dark) .ct-view [class*="border-emerald-200"] { border-color: color-mix(in srgb, var(--ct-secondary) 32%, var(--ct-border)) !important; }
+html.dark .ct-view [class*="dark:bg-emerald-950"] { background-color: color-mix(in srgb, var(--ct-primary) 10%, var(--ct-surface)) !important; }
+html.dark .ct-view [class*="dark:border-emerald-800"] { border-color: color-mix(in srgb, var(--ct-primary) 20%, var(--ct-border)) !important; }
+@media (max-width: 639px) {
+  .ct-view { min-width: 0; }
+  .ct-view > .flex.flex-col { align-items: stretch; }
+  .ct-view h1 { line-height: 1.25; }
+}
